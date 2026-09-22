@@ -54,20 +54,21 @@ async def on_category_chosen(update: Update, context: ContextTypes.DEFAULT_TYPE)
     await query.edit_message_text(f"Making your {category['label']} video... give me a minute ⏳")
 
     quote = random.choice(category["quotes"])
-    keyword = random.choice(category["photo_keywords"])
+    keywords = category["photo_keywords"]
 
     tmp = videomaker.TMP_DIR
-    photo_path = os.path.join(tmp, f"{key}_photo.jpg")
+    photo_dir = os.path.join(tmp, f"{key}_{query.message.chat_id}")
+    os.makedirs(photo_dir, exist_ok=True)
     video_path = os.path.join(tmp, f"{key}_video.mp4")
     voice_path = os.path.join(tmp, f"{key}_voice.mp3")
 
     try:
-        videomaker.fetch_photo(keyword, photo_path)
+        photo_paths = videomaker.fetch_photos(keywords, count=3, out_dir=photo_dir)
         has_voice = videomaker.make_voice(quote, voice_path)
         videomaker.build_video(
             quote=quote,
             attribution=ATTRIBUTION_TEXT,
-            photo_path=photo_path,
+            photo_paths=photo_paths,
             out_path=video_path,
             duration=20,
             voice_path=voice_path if has_voice else None,
@@ -85,7 +86,10 @@ async def on_category_chosen(update: Update, context: ContextTypes.DEFAULT_TYPE)
             text=f"Sorry, something went wrong making the video: {e}",
         )
     finally:
-        for p in (photo_path, video_path, voice_path):
+        import shutil
+        if os.path.isdir(photo_dir):
+            shutil.rmtree(photo_dir, ignore_errors=True)
+        for p in (video_path, voice_path):
             if os.path.exists(p):
                 os.remove(p)
 
@@ -125,3 +129,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+        
