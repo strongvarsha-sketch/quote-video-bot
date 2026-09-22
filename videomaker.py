@@ -50,7 +50,7 @@ def make_voice(text: str, out_path: str) -> bool:
 
 
 def build_video(quote: str, attribution: str, photo_path: str, out_path: str,
-                 duration: int = 8, voice_path: str = None) -> str:
+                 duration: int = 20, voice_path: str = None) -> str:
     """Combine photo + zoom + text into a finished mp4. Returns out_path."""
     quote_file = os.path.join(TMP_DIR, "quote.txt")
     attrib_file = os.path.join(TMP_DIR, "attrib.txt")
@@ -59,9 +59,11 @@ def build_video(quote: str, attribution: str, photo_path: str, out_path: str,
     with open(attrib_file, "w", encoding="utf-8") as f:
         f.write(attribution)
 
+    frames = duration * 25
+    zoom_rate = 0.15 / frames  # spreads the zoom from 1.0 to 1.15 across the full video length
     vf = (
         "scale=2400:3000,"
-        "zoompan=z='min(zoom+0.0007,1.15)':d={frames}:s=1080x1350:fps=25,"
+        "zoompan=z='min(zoom+{zoom_rate},1.15)':d={frames}:s=1080x1350:fps=25,"
         "vignette=PI/5,"
         "drawtext=textfile={qf}:fontfile={font}:fontsize=72:fontcolor=white:"
         "line_spacing=16:x=(w-text_w)/2:y=(h-text_h)/2-60:"
@@ -69,7 +71,7 @@ def build_video(quote: str, attribution: str, photo_path: str, out_path: str,
         "drawtext=textfile={af}:fontfile={afont}:fontsize=32:fontcolor=white@0.85:"
         "x=(w-text_w)/2:y=(h/2)+180:"
         "alpha='if(lt(t,1.3),0,if(lt(t,2.3),(t-1.3),1))'"
-    ).format(frames=duration * 25, qf=quote_file, font=FONT_PATH,
+    ).format(frames=frames, zoom_rate=zoom_rate, qf=quote_file, font=FONT_PATH,
               af=attrib_file, afont=ATTRIB_FONT)
 
     cmd = [
@@ -85,3 +87,4 @@ def build_video(quote: str, attribution: str, photo_path: str, out_path: str,
 
     subprocess.run(cmd, check=True, capture_output=True)
     return out_path
+                     
