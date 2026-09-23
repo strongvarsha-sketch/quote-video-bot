@@ -48,7 +48,50 @@ LOVE_EMOTIONAL = [
     "Being chosen every day is better than any grand gesture.",
 ]
 
+MOTIVATIONAL_HINDI = [
+    "हार मत मानो, मंज़िल दूर नहीं है।",
+    "मेहनत करने वालों की कभी हार नहीं होती।",
+    "आज का दर्द कल की ताकत बनेगा।",
+    "खुद पर भरोसा रखो, बाकी सब हो जाएगा।",
+    "रास्ता मुश्किल है इसलिए मंज़िल खूबसूरत है।",
+    "छोटी शुरुआत से बड़े सपने पूरे होते हैं।",
+    "जो रुकते नहीं, वही जीतते हैं।",
+    "हर सुबह एक नया मौका लेकर आती है।",
+    "गिरना बुरा नहीं, ना उठना बुरा है।",
+    "सपने वो नहीं जो सोते वक़्त आएं, सपने वो हैं जो सोने ना दें।",
+    "कोशिश करने वालों की कभी हार नहीं होती।",
+    "खुद को साबित करने के लिए किसी और की ज़रूरत नहीं।",
+    "वक़्त बदलता है, बस डटे रहो।",
+    "हर मुश्किल के बाद एक आसानी है।",
+    "जीत उन्हीं की होती है जो हार कर भी लड़ते रहें।",
+    "मंज़िल मिल ही जाएगी, भटकते ही सही, राह चलते तो हैं।",
+    "खुद पर यकीन रखो, दुनिया अपने आप साथ देगी।",
+    "आज जो बोया है, वही कल काटोगे।",
+    "थक कर बैठना नहीं, थक कर आगे बढ़ना है।",
+    "सफलता उनकी होती है जो कोशिश करना नहीं छोड़ते।",
+]
+
+LOVE_EMOTIONAL_HINDI = [
+    "तेरी यादें ही अब मेरी सबसे प्यारी सहेली हैं।",
+    "तुझसे मिलकर लगा जैसे घर मिल गया।",
+    "कुछ रिश्ते बिना कहे भी समझ आ जाते हैं।",
+    "तेरे बिना हर जगह अधूरी सी लगती है।",
+    "तेरी मुस्कान ही मेरी सबसे बड़ी खुशी है।",
+    "दूरियां कुछ नहीं होतीं जब दिल पास हो।",
+    "तुझे सोचना भी अब आदत बन गई है।",
+    "प्यार में शब्दों की नहीं, एहसास की ज़रूरत होती है।",
+    "तू है तो हर मुश्किल आसान लगती है।",
+    "कुछ लोग बिना कुछ कहे भी सुकून दे जाते हैं।",
+    "तेरी बातें अब भी वैसे ही याद हैं।",
+    "इश्क़ में सब्र सबसे बड़ी ताकत है।",
+    "तुझसे दूर रहकर भी तू हमेशा पास लगता है।",
+    "कुछ मोहब्बतें वक़्त के साथ और गहरी हो जाती हैं।",
+    "तेरा साथ ही अब मेरी सबसे बड़ी दौलत है।",
+]
+
 CATEGORIES = {
-    "motivational": {"label": "Motivational / Success", "quotes": MOTIVATIONAL, "photo_keywords": ["sunrise mountain", "runner sunset", "open road", "city skyline dawn"]},
-    "love": {"label": "Love / Emotional", "quotes": LOVE_EMOTIONAL, "photo_keywords": ["soft sunset sky", "rain window", "autumn leaves path", "candle warm light"]},
+    "motivational": {"label": "Motivational / Success", "lang": "en", "quotes": MOTIVATIONAL, "photo_keywords": ["sunrise mountain", "runner sunset", "open road", "city skyline dawn"]},
+    "love": {"label": "Love / Emotional", "lang": "en", "quotes": LOVE_EMOTIONAL, "photo_keywords": ["soft sunset sky", "rain window", "autumn leaves path", "candle warm light"]},
+    "hindi_motivational": {"label": "हिंदी: मोटिवेशनल", "lang": "hi", "quotes": MOTIVATIONAL_HINDI, "photo_keywords": ["sunrise mountain", "runner sunset", "open road", "city skyline dawn"]},
+    "hindi_love": {"label": "हिंदी: प्रेम / भावनिक", "lang": "hi", "quotes": LOVE_EMOTIONAL_HINDI, "photo_keywords": ["soft sunset sky", "rain window", "autumn leaves path", "candle warm light"]},
 }
