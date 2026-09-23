@@ -1,8 +1,9 @@
 FROM python:3.11-slim
 
-# ffmpeg is needed to build the videos; fonts-dejavu-core provides the caption font
+# ffmpeg is needed to build the videos.
+# fonts-dejavu-core covers English captions; fonts-noto-core adds Devanagari (Hindi) support.
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends ffmpeg fonts-dejavu-core && \
+    apt-get install -y --no-install-recommends ffmpeg fonts-dejavu-core fonts-noto-core && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
