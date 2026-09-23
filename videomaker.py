@@ -8,10 +8,35 @@ import textwrap
 import requests
 
 PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY", "")
-FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf"
-ATTRIB_FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf"
 TMP_DIR = "/tmp/quotebot"
 os.makedirs(TMP_DIR, exist_ok=True)
+
+
+def _resolve_font(family: str) -> str:
+    """Ask fontconfig for the actual file path of a font family.
+    This avoids hardcoding paths that can differ between systems."""
+    try:
+        out = subprocess.run(
+            ["fc-match", "-f", "%{file}", family],
+            capture_output=True, text=True, check=True, timeout=5,
+        )
+        path = out.stdout.strip()
+        if path and os.path.exists(path):
+            return path
+    except Exception as e:
+        print(f"Font lookup failed for '{family}':", e)
+    return "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf"  # safe fallback
+
+
+# Resolved once at import time.
+FONT_LATIN_BOLD = _resolve_font("DejaVu Serif:bold")
+FONT_LATIN_REGULAR = _resolve_font("DejaVu Serif")
+FONT_DEVANAGARI_BOLD = _resolve_font("Noto Sans Devanagari:bold")
+FONT_DEVANAGARI_REGULAR = _resolve_font("Noto Sans Devanagari")
+
+# Keep these names for backward compatibility with the rest of the module.
+FONT_PATH = FONT_LATIN_BOLD
+ATTRIB_FONT = FONT_LATIN_REGULAR
 
 
 def fetch_photo(keyword: str, out_path: str) -> str:
@@ -50,14 +75,14 @@ def wrap_quote(text: str, width: int = 22) -> str:
     return "\n".join(textwrap.wrap(text, width=width))
 
 
-def make_voice(text: str, out_path: str) -> bool:
+def make_voice(text: str, out_path: str, lang: str = "en") -> bool:
     """Generate a spoken version of the quote using gTTS. Returns True if successful.
     Wrapped with a timeout so a slow/unresponsive TTS service can't hang the bot forever."""
     import concurrent.futures
 
     def _generate():
         from gtts import gTTS
-        tts = gTTS(text=text, lang="en", slow=False)
+        tts = gTTS(text=text, lang=lang, slow=False)
         tts.save(out_path)
 
     try:
@@ -71,16 +96,19 @@ def make_voice(text: str, out_path: str) -> bool:
 
 
 def build_video(quote: str, attribution: str, photo_paths, out_path: str,
-                 duration: int = 20, voice_path: str = None) -> str:
+                 duration: int = 20, voice_path: str = None, lang: str = "en") -> str:
     """Combine 1+ photos (crossfading between them) + zoom + text into a finished mp4."""
     if isinstance(photo_paths, str):
         photo_paths = [photo_paths]
     n = len(photo_paths)
 
+    font_bold = FONT_DEVANAGARI_BOLD if lang == "hi" else FONT_LATIN_BOLD
+    font_regular = FONT_DEVANAGARI_REGULAR if lang == "hi" else FONT_LATIN_REGULAR
+
     quote_file = os.path.join(TMP_DIR, "quote.txt")
     attrib_file = os.path.join(TMP_DIR, "attrib.txt")
     with open(quote_file, "w", encoding="utf-8") as f:
-        f.write(wrap_quote(quote))
+        f.write(wrap_quote(quote, width=18 if lang == "hi" else 22))
     with open(attrib_file, "w", encoding="utf-8") as f:
         f.write(attribution)
 
@@ -127,10 +155,10 @@ def build_video(quote: str, attribution: str, photo_paths, out_path: str,
     # Caption overlay, applied once across the whole merged video.
     filter_parts.append(
         f"[{merged_label}]vignette=PI/5,"
-        f"drawtext=textfile={quote_file}:fontfile={FONT_PATH}:fontsize=72:fontcolor=white:"
+        f"drawtext=textfile={quote_file}:fontfile={font_bold}:fontsize=72:fontcolor=white:"
         f"line_spacing=16:x=(w-text_w)/2:y=(h-text_h)/2-60:"
         f"alpha='if(lt(t,1),t,1)':shadowcolor=black@0.5:shadowx=2:shadowy=2,"
-        f"drawtext=textfile={attrib_file}:fontfile={ATTRIB_FONT}:fontsize=32:fontcolor=white@0.85:"
+        f"drawtext=textfile={attrib_file}:fontfile={font_regular}:fontsize=32:fontcolor=white@0.85:"
         f"x=(w-text_w)/2:y=(h/2)+180:"
         f"alpha='if(lt(t,1.3),0,if(lt(t,2.3),(t-1.3),1))'[vout]"
     )
