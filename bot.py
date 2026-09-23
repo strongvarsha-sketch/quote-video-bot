@@ -64,7 +64,8 @@ async def on_category_chosen(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
     try:
         photo_paths = videomaker.fetch_photos(keywords, count=3, out_dir=photo_dir)
-        has_voice = videomaker.make_voice(quote, voice_path)
+        lang = category.get("lang", "en")
+        has_voice = videomaker.make_voice(quote, voice_path, lang=lang)
         videomaker.build_video(
             quote=quote,
             attribution=ATTRIBUTION_TEXT,
@@ -72,6 +73,7 @@ async def on_category_chosen(update: Update, context: ContextTypes.DEFAULT_TYPE)
             out_path=video_path,
             duration=20,
             voice_path=voice_path if has_voice else None,
+            lang=lang,
         )
         with open(video_path, "rb") as f:
             await context.bot.send_video(
@@ -129,4 +131,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-        
+    
